@@ -5,6 +5,6 @@ export default class User {
     public userName: string,
     public password: string,
     public email: string,
-    public id?: string
+    public id?: ObjectId
   ) {}
 }

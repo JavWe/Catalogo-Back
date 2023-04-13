@@ -1,10 +1,10 @@
 import express from 'express';
-import {SingUser} from '../controller/auth.controller';
-import {getUser} from '../controller/auth.controller';
+import * as authController from '../controller/auth.controller';
+
 const router = express.Router();
 
-router.post('/sing-in', SingUser);
-router.get('/', getUser);
+router.post('/sing-in', authController.SingUser);
+router.get('/login', authController.login);
 
 
 
