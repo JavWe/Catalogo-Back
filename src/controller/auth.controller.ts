@@ -1,21 +1,21 @@
-import express, { Request, Response } from "express";
-import { ObjectId } from "mongodb";
-import { collections } from "../services/database.service";
-import User from "../models/user";
+import { Request, Response } from "express";
+import {User , IUser} from "../models/user";
 import TokenService from "../services/token.service";
-import * as bycrypt from "bcrypt";
+
 
 class authController{
-    async SingUser(req:Request ,res: Response): Promise<void>{
+    SingUser(req:Request ,res: Response){
         try {
-            const newUser: User = {
+            const newUser: IUser = {
                 userName: req.body.userName,
                 password: req.body.password,
                 email: req.body.email,
             };
-            await collections.users?.insertOne(newUser).then((result) => {
-                res.status(201).send(result);
-            }).catch((error) => {res.status(400).send(error)});
+
+           User.create(newUser).then((result) => {
+               res.status(200).send(result);
+           }).catch((error) => {res.status(400).send(error)});
+        
     
         } catch (error) {
             console.error(error);
@@ -27,7 +27,7 @@ class authController{
 
  async loginUser(req:Request ,res: Response): Promise<void>{
     try {
-        await collections.users?.findOne({ userName: req.body.userName, password: req.body.password }).then((result) => {
+        User.findOne({userName: req.body.userName , password: req.body.password}).then((result) => {
             if(result){
                 let token = TokenService.setToken(
                     result.email,
@@ -38,9 +38,9 @@ class authController{
                   ); 
                 res.status(200).send({ result, token });
             }else{
-                res.status(400).send({message: "Usuario o contraseña incorrecta"});
+                res.status(400).send("User not found");
             }
-        }).catch((error) => {res.status(400).send(error)});
+        })
 
      } catch (error) {
          res.status(500).send(error);
