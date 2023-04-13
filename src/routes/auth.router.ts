@@ -1,11 +1,28 @@
-import express from 'express';
-import * as authController from '../controller/auth.controller';
-
-const router = express.Router();
-
-router.post('/sing-in', authController.SingUser);
-router.get('/login', authController.login);
+import {Router} from 'express';
+import authController from "../controller/auth.controller";
 
 
+class AuthRouter{
+    private _router = Router();
+    private authController = authController;
 
-export default router;
+    get router() {
+        return this._router;
+      }
+    constructor(){
+        this.config();
+    }
+
+    config(): void{
+        this.router.post('/sing-in', authController.SingUser);
+        this.router.post('/login', authController.loginUser);
+    }
+}
+
+
+
+
+
+
+
+export = new AuthRouter().router;

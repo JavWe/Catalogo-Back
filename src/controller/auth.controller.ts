@@ -3,42 +3,48 @@ import { ObjectId } from "mongodb";
 import { collections } from "../services/database.service";
 import User from "../models/user";
 import TokenService from "../services/token.service";
+import * as bycrypt from "bcrypt";
 
-
+class authController{
+    async SingUser(req:Request ,res: Response): Promise<void>{
+        try {
+            const newUser: User = {
+                userName: req.body.userName,
+                password: req.body.password,
+                email: req.body.email,
+            };
+            await collections.users?.insertOne(newUser).then((result) => {
+                res.status(201).send(result);
+            }).catch((error) => {res.status(400).send(error)});
     
-export async function SingUser(req:Request ,res: Response): Promise<void>{
+        } catch (error) {
+            console.error(error);
+            res.status(400).send(error);
+        }
+        }
+   
+
+
+ async loginUser(req:Request ,res: Response): Promise<void>{
     try {
-        const newUser = req.body as User;
-        const result = await collections.users?.insertOne(newUser);
-
-        result
-            ? res.status(201).send(`Successfully created a new user`)
-            : res.status(500).send("Failed to create a new game.");
-    } catch (error) {
-        console.error(error);
-        res.status(400).send(error);
-    }
-    }
-
-
-export async function login(req:Request ,res: Response): Promise<void>{
-    try {
-        const user = (await collections.users?.findOne({ userName: req.body.userName, password: req.body.password }) as unknown as User)
-        if(!user){
-            res.status(404).send("User not found")
-        }else{
-            let token = TokenService.setToken(
-                user.email,
-                user.password,
-                user.userName,
-                process.env.SECRET as string,
-                { expiresIn: 2592e8 }
-              ); 
-              res.status(200).send({ user, token });
-        } ;
+        await collections.users?.findOne({ userName: req.body.userName, password: req.body.password }).then((result) => {
+            if(result){
+                let token = TokenService.setToken(
+                    result.email,
+                    result.password,
+                    result.userName,
+                    process.env.SECRET as string,
+                    { expiresIn: 2592e8 }
+                  ); 
+                res.status(200).send({ result, token });
+            }else{
+                res.status(400).send({message: "Usuario o contraseña incorrecta"});
+            }
+        }).catch((error) => {res.status(400).send(error)});
 
      } catch (error) {
          res.status(500).send(error);
-         console.log(error)
      }
 }
+}
+export = new authController();
