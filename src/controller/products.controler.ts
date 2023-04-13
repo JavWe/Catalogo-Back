@@ -23,16 +23,21 @@ class productsController {
     }
   }
 
-  getOneProduct(req: Request, res: Response) {
-    Product.findById(req.body.id).then((result) => {
+  getOneById(req: Request, res: Response) {
+    Product.findById(req.query.id).then((result) => {
+      res.status(200).send(result);
+    });
+  }
+
+  getAllCategory(req: Request, res: Response) {
+    Product.find({category: req.query.category}).then((result) => {
       res.status(200).send(result);
     });
   }
 
 
-
   postOneProduct(req: Request, res: Response) {
-    Product.create(req.body).then((result) => {
+    Product.insertMany(req.body).then((result) => {
       res.status(200).send(result);
     });
   }

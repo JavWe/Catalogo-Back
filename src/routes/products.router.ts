@@ -18,7 +18,8 @@ class ProductsRouter{
         this.router.get('/', this._productsController.getAllPRoducts);
         this.router.post('/create', this._productsController.postOneProduct);
         this.router.delete('/delete', this._productsController.deleteOneProduct);
-        this.router.get('/getone', this._productsController.getOneProduct);
+        this.router.get('/get-id', this._productsController.getOneById);
+        this.router.get('/get-category', this._productsController.getAllCategory);
     }
 }
 
