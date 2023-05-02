@@ -27,7 +27,7 @@ class authController{
 
  async loginUser(req:Request ,res: Response): Promise<void>{
     try {
-        User.findOne({userName: req.body.userName , password: req.body.password}).then((result) => {
+        User.findOne({email: req.body.email , password: req.body.password}).then((result) => {
             if(result){
                 let token = TokenService.setToken(
                     result.email,
@@ -36,7 +36,8 @@ class authController{
                     process.env.SECRET as string,
                     { expiresIn: 2592e8 }
                   ); 
-                res.status(200).send({ result, token });
+               
+                res.status(200).send({ userName:result.userName, token });
             }else{
                 res.status(400).send("User not found");
             }
